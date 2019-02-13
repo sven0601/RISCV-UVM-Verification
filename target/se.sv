@@ -3,7 +3,7 @@ module sign_extend_csr(
 	input [4:0]se_csr_in,
   output [31:0]se_csr_imm
 	);
-assign se_csr_imm = {28'b0,se_csr_in};
+  assign se_csr_imm = {27'b0,se_csr_in};
 
 endmodule
 
@@ -47,7 +47,7 @@ module sign_extend_J(
 	input [19:0]se_J_in,
 	output [31:0]se_J_imm
 	);
-  assign se_J_imm = {12'b0,se_J_in[19],se_J_in[7:0],se_J_in[8],se_J_in[18:9],1'b0};
+  assign se_J_imm = {11'b0,se_J_in[19],se_J_in[7:0],se_J_in[8],se_J_in[18:9],1'b0};
 endmodule
 
 
@@ -58,5 +58,5 @@ module sign_extend_B(
 	input [4:0]se_B_in2,
 	output [31:0]se_B_imm
 	);
-  assign se_B_imm = {20'b0,se_B_in1[6],se_B_in2[0],se_B_in1[5:0],se_B_in2[4:1],1'b0};
+  assign se_B_imm = {19'b0,se_B_in1[6],se_B_in2[0],se_B_in1[5:0],se_B_in2[4:1],1'b0};
 endmodule

@@ -8,32 +8,44 @@ module registers(
   	input [4:0] rd,
 	input [31:0] reg_wr_dat,
 	input regWrite,
-	output [31:0] rd1,
-	output [31:0] rd2
+	output reg [31:0] rd1,
+	output reg [31:0] rd2
 	);
 
 reg [31:0] ram [31:0];
 initial begin
-  	ram[0] = 32'd0;
-  ram[1] = 32'd5;
-  ram[2] = 32'd10;
-  ram[3] = 32'd15;
-  ram[4] = 32'd20;
-  ram[6] = 32'hffffffff;
+  for (int i = 0; i < 32 ; ++i) begin
+    ram[i] = 32'b0;
+  end
 end
 
+  always @ (posedge clk)	begin	// read
+    if (reset & (rs1!=5'b0)) begin
+      rd1 <= ram[rs1];
+    end
+    else begin
+      rd1 <= 32'b0;
+    end
+    
+    if (reset & (rs2!=5'b0)) begin
+      rd2 <= ram[rs2];
+    end
+    else begin
+      rd2 <= 32'b0;
+    end
+  end
 
-
-always @(posedge clk) begin
-  if(regWrite & (rd!=5'b0)) begin
-	ram[rd] <= reg_wr_dat;
+  always @(posedge clk) begin	//	write
+  if(reset & regWrite ) begin
+    if (rd==5'b0) begin
+      ram[rd] <= 32'b0;
+    end
+    else begin
+      $display("REG WRITE :	%d	at x%d",reg_wr_dat , rd);
+      ram[rd] <= reg_wr_dat;
+    end
     end
   end // always @(posedge clk)
 
-  always @(*) begin
-    ram[0] <= 32'b0;
-  end
-  assign rd1 = reset? ram[rs1] : 32'b0;
-  assign rd2 = reset? ram[rs2] : 32'b0;
  
 endmodule // registers

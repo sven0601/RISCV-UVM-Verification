@@ -1,3 +1,7 @@
+//import uvm_pkg::*;
+//include "/home/mashruwv1/Downloads/1800.2-2017-0.9/src/uvm_macros.svh";
+
+
 class riscv_seq_item extends uvm_sequence_item;
   
     `uvm_object_utils(riscv_seq_item)
