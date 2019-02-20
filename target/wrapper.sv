@@ -18,7 +18,7 @@ module riscv_wrapper(
   riscv_core 			cpu(
     		.clk(clk),.reset(reset),
                  
-            .pc(pc),.instr(instr),
+    		.pc(pc),.instr_in(instr),
             
             .csr(csr),
             .csr_rd_addr(csr_rd_addr),

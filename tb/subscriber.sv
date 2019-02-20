@@ -9,8 +9,8 @@ class riscv_coverage extends uvm_subscriber#(riscv_seq_item);
   	
   	riscv_seq_item trans;
   
-  covergroup instructions;
-      ins : coverpoint trans.instr[6:0] {
+   covergroup instructions;
+      c_instr : coverpoint trans.instr[6:0] {
         bins LUI = {7'b0110111};
         bins AUIPC = {7'b0010111};
         bins JAL = {7'b1101111};
@@ -23,7 +23,11 @@ class riscv_coverage extends uvm_subscriber#(riscv_seq_item);
         bins FENCE = {7'b0001111};
         bins CSR = {7'b1110011};
       }
+     c_funct : coverpoint trans.instr[14:12];
+     c_cross : cross c_instr, c_funct;
     endgroup
+  
+ 
      
   	function new(string name, uvm_component parent);
        super.new(name, parent);
@@ -33,15 +37,12 @@ class riscv_coverage extends uvm_subscriber#(riscv_seq_item);
     
   
   	function void write(input riscv_seq_item t);
-      	trans = t;
+      trans = t;
       instructions.sample();
-    	`uvm_info("mg", $psprintf("Subscriber received t %s", t.convert2string()), UVM_NONE);
-      $display("COVERAGE :	%d\n", instructions.ins.get_coverage());
+//    	`uvm_info("mg", $psprintf("Subscriber received t %s", t.convert2string()), UVM_NONE);
+      $display("INSTRUCTIONS COVERED	:	%d\n",  instructions.c_cross.get_coverage());
   	endfunction 
   
 
 endclass: riscv_coverage
        
-      
-      
-//---------

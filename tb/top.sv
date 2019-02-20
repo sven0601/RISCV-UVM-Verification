@@ -12,10 +12,10 @@ module top();
    $dumpvars;  	
     clk = 0;
     reset = 0;
-    #12 reset = 1;
+    #5 reset = 1;
   end
 
-  always #5 clk = ~clk;
+  always #2 clk = ~clk;
    
  
   riscv_if riscv_if0 (.clk(clk), .reset(reset));

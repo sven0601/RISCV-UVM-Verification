@@ -39,9 +39,10 @@ end
   if(reset & regWrite ) begin
     if (rd==5'b0) begin
       ram[rd] <= 32'b0;
+      $display("REG WRITE :		 %d		at		x%d",32'd0 , rd);
     end
     else begin
-      $display("REG WRITE :	%d	at x%d",reg_wr_dat , rd);
+      $display("REG WRITE :		 %d		at		x%d",reg_wr_dat , rd);
       ram[rd] <= reg_wr_dat;
     end
     end

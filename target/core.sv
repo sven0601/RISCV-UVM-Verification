@@ -10,7 +10,7 @@ module riscv_core#(
   input reset,
   
   output reg [31:0]pc,
-  input [31:0]instr,
+  input [31:0]instr_in,
   
   output csr, 
   output [11:0]csr_rd_addr,
@@ -43,11 +43,17 @@ wire jump, branch, Alusrc1, Alusrc2, regWrite, H_sel, c, invert;
 wire [1:0] ImSel, wr_sel;
 wire [31:0] mtvec, mstatus, predecessor, successor;
 wire [2:0]ALUop;
-
+reg [31:0]instr;
   
 always @(posedge clk) begin
-  if (reset) pc <= pc_out;
-  else pc <= 32'h0 ;
+  if (reset) begin
+    pc <=  pc_out;
+    instr  <= instr_in;
+  end
+  else begin
+    pc <= 32'h0 ;
+    instr <= 32'h0;
+  end
 end
    
 assign csri = csr & funct[2];
@@ -105,6 +111,7 @@ assign alu_in2 = Alusrc2 ? Imm : rd2;
 //   DM   ////////////////////////////////////////////////////////////////
 
   always @(*) begin
+    if (reset) begin
     if (ALUop[1]) begin  
        case (funct[1:0])
             2'b00: m_wr_dat <= rd2 & 32'h000000ff;
@@ -112,7 +119,9 @@ assign alu_in2 = Alusrc2 ? Imm : rd2;
             2'b10: m_wr_dat <= rd2;
           	2'b11: m_wr_dat <= rd2;
         endcase
-    end    
+    end   
+    end
+    else m_wr_dat <= 32'h0;
   end
   
 //   WB   //////////////////////////////////////////////////////////////////////
