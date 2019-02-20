@@ -1,5 +1,4 @@
-// LOAD, STORE, FENCE
-// BLTU, BGEU, ECALL, EBREAK, STLU
+
 class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
   
   `uvm_component_utils(riscv_scoreboard)
