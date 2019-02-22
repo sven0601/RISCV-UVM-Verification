@@ -26,19 +26,19 @@ reg pc_sel;
 
 always @(*) begin
 case ({funct[2],funct[0]})
-	2'b00: b_type <= zero;
-	2'b01: b_type <= ~zero;
-	2'b10: b_type <= less_than;
-	2'b11: b_type <= ~less_than;
+	2'b00: b_type = zero;
+	2'b01: b_type = ~zero;
+	2'b10: b_type = less_than;
+	2'b11: b_type = ~less_than;
 endcase
   pc_sel <= (jump) | (branch & b_type);
 end  
   
 always @(*) begin
-    if(!fence)  prev  <= pc;
-  	next_pc = pc + 32'd1 ;
-    pc_out <= pc_sel ? pc_in1 : pc_in0;
-end
+    if(!fence)  prev  = pc;
+  	next_pc = pc + 32'd4 ;
+	pc_out = reset ? (pc_sel ? pc_in1 : pc_in0) : 32'b0;
+end 
   
 always @(fence) begin
     predecessor <= prev;
@@ -46,6 +46,6 @@ always @(fence) begin
 end
 
 assign pc_in0 = next_pc;
-assign pc_in1 = (jump & ~H_sel) ? alu_out_h : (next_pc + Imm_H);
+assign pc_in1 = (jump & ~H_sel) ? alu_out_h : (pc + Imm_H);
   
 endmodule 

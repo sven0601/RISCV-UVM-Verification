@@ -19,19 +19,21 @@ initial begin
   end
 end
 
-  always @ (posedge clk)	begin	// read
+  always @ (*)	begin	// read
     if (reset & (rs1!=5'b0)) begin
-      rd1 <= ram[rs1];
+      rd1 = ram[rs1];
     end
     else begin
-      rd1 <= 32'b0;
+      rd1 = 32'b0;
     end
     
+    uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","reg_rd_dat", rd1);
+    
     if (reset & (rs2!=5'b0)) begin
-      rd2 <= ram[rs2];
+      rd2 = ram[rs2];
     end
     else begin
-      rd2 <= 32'b0;
+      rd2 = 32'b0;
     end
   end
 
@@ -39,14 +41,15 @@ end
   if(reset & regWrite ) begin
     if (rd==5'b0) begin
       ram[rd] <= 32'b0;
-      $display("REG WRITE :		 %d		at		x%d",32'd0 , rd);
+//      $display("REG WRITE :		 %d		at		x%d",32'd0 , rd);
     end
     else begin
-      $display("REG WRITE :		 %d		at		x%d",reg_wr_dat , rd);
+//      $display("REG WRITE :		 %d		at		x%d",reg_wr_dat , rd);
       ram[rd] <= reg_wr_dat;
     end
     end
   end // always @(posedge clk)
+
 
  
 endmodule // registers

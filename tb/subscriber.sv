@@ -40,7 +40,7 @@ class riscv_coverage extends uvm_subscriber#(riscv_seq_item);
       trans = t;
       instructions.sample();
 //    	`uvm_info("mg", $psprintf("Subscriber received t %s", t.convert2string()), UVM_NONE);
-      $display("INSTRUCTIONS COVERED	:	%d\n",  instructions.c_cross.get_coverage());
+//      $display("COVERAGE	:	%d",  instructions.c_cross.get_coverage());
   	endfunction 
   
 

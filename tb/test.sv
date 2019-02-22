@@ -18,8 +18,6 @@ class riscv_test extends uvm_test;
     endfunction
     
     task run_phase(uvm_phase phase);
-     /* if( !sequ.randomize() ) 
-        `uvm_error("", "Randomize failed")*/
       phase.raise_objection(this);
       sequ.start(env.agent.seqr);
       phase.drop_objection(this);

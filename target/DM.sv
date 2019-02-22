@@ -20,8 +20,10 @@ end
 
 always @(posedge clk) begin
   if (reset) begin
-	if (rd_en == 1) 
+    if (rd_en == 1) begin
       m_rd_dat <= mem[m_addr];
+      $display("Data :  %h read from Address : %h \n", m_rd_dat, m_addr);
+    end
     if (wr_en == 1) begin
       mem[m_addr] <= m_wr_dat;
       $display("Data :  %h written at Address : %h \n", m_wr_dat, m_addr);

@@ -21,7 +21,6 @@ class riscv_driver extends uvm_driver #(riscv_seq_item);
       forever begin
         seq_item_port.get_next_item(req);
  		drive(req);
-//        vi.instructions.sample();
         seq_item_port.item_done();
       end
     endtask
@@ -29,8 +28,8 @@ class riscv_driver extends uvm_driver #(riscv_seq_item);
       
       task drive(input riscv_seq_item req);
         @(posedge vi.DRIVER.clk);
-        vi.instr = req.instr;
         req.pc = vi.pc;
+        vi.instr = req.instr;
 //        $display("DRIVER	:	PC = %d	instr = %d\n", vi.pc, vi.instr);
       endtask
       
