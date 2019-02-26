@@ -61,12 +61,12 @@ assign funct = instr[14:12];
 assign IF_out1 = csri? se_csr_imm : rd1;
 assign Imm_H = H_sel? se_J_imm : se_B_imm;
 assign alu_out = (funct[1] | (jump & ~H_sel))? m_addr : Imm;
-assign alu_out_h = alu_out << 1;
-assign invert = instr[30];
+assign alu_out_h = alu_out & 32'hfffffffe;
+assign invert = (instr[31:25] == 7'b0100000) ? 1 : 0 ;
 
 
-control_unit  debug(.reset(reset),.opcode(instr[6:0]),.jump(jump),.ImSel(ImSel),.branch(branch),.Alusrc1(Alusrc1),.Alusrc2(Alusrc2),.MemRead(MemRead),.MemWrite(MemWrite),.ALUop(ALUop),.regWrite(regWrite),.H_sel(H_sel),.csr(csr),.wr_sel(wr_sel),.invert(invert),.fence(fence));   // control unit
-
+control_unit  debug(.reset(reset),.opcode(instr[6:0]),.jump(jump),.ImSel(ImSel),.branch(branch),.Alusrc1(Alusrc1),.Alusrc2(Alusrc2),.MemRead(MemRead),.MemWrite(MemWrite),.ALUop(ALUop),.regWrite(regWrite),.H_sel(H_sel),.csr(csr),.wr_sel(wr_sel),.funct(funct),.invert(invert),.fence(fence));   // control unit
+ 
 sign_extend_csr se_csr(.se_csr_in(instr[19:15]),.se_csr_imm(se_csr_imm));	// Sign extend of CSR 
 
   wire [4:0]rd;
@@ -74,7 +74,7 @@ sign_extend_csr se_csr(.se_csr_in(instr[19:15]),.se_csr_imm(se_csr_imm));	// Sig
   assign csr_rd_addr = instr[31:20];
   assign csr_wr_data = alu_out[31:0];
  
-sign_extend_I se_I(.se_I_in(instr[31:20]),.se_I_imm(se_I_imm));	// Sign extend of I Type
+  sign_extend_I se_I(.se_I_in(instr[31:20]),.funct(funct),.se_I_imm(se_I_imm));	// Sign extend of I Type
 
 sign_extend_S se_S(.se_S_in1(instr[31:25]),.se_S_in2(instr[11:7]),.se_S_imm(se_S_imm));	// Sign extend of S Type
 
@@ -91,11 +91,11 @@ sign_extend_B se_B(.se_B_in1(instr[31:25]),.se_B_in2(instr[11:7]),.se_B_imm(se_B
   
 always @(*) begin
 case (ImSel)// Mux for Immediate select
-  2'b00: Imm <= csr_rd_data;
-  2'b01: Imm <= se_I_imm;
-  2'b10: Imm <= se_S_imm;
-  2'b11: Imm <= se_U_imm;
-endcase
+  2'b00: Imm = csr_rd_data;
+  2'b01: Imm = se_I_imm;
+  2'b10: Imm = se_S_imm;
+  2'b11: Imm = se_U_imm;
+endcase 
 end
 
 //  EX Stage  /////////////////////////////////////////////////////////////

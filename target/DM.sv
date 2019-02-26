@@ -10,7 +10,7 @@ module memory(
 	);
 
 
-  reg [31:0]mem[1023:0];
+  reg [31:0]mem[(2**20) - 1:0];
   int file;
   
 initial begin
@@ -21,11 +21,11 @@ end
 always @(posedge clk) begin
   if (reset) begin
     if (rd_en == 1) begin
-      m_rd_dat <= mem[m_addr];
+      m_rd_dat <= mem[m_addr << 2];
       $display("Data :  %h read from Address : %h \n", m_rd_dat, m_addr);
     end
     if (wr_en == 1) begin
-      mem[m_addr] <= m_wr_dat;
+      mem[m_addr << 2] <= m_wr_dat;
       $display("Data :  %h written at Address : %h \n", m_wr_dat, m_addr);
       $fwrite(file,"%h \n",m_wr_dat);
     end

@@ -29,7 +29,7 @@ case ({funct[2],funct[0]})
 	2'b00: b_type = zero;
 	2'b01: b_type = ~zero;
 	2'b10: b_type = less_than;
-	2'b11: b_type = ~less_than;
+  	2'b11: b_type = ~ (less_than | zero);
 endcase
   pc_sel <= (jump) | (branch & b_type);
 end  

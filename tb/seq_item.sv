@@ -94,7 +94,7 @@ class riscv_seq_item extends uvm_sequence_item;
               3'b101 : instr_name = "CSRRWI";
             endcase
         endcase
-        return $psprintf("pc = %h, instr = %h, instr type = %s", pc, instr, instr_name);
+        return $psprintf("PC = %h,  INSTRUCTION = %h,  INSTRUCTION TYPE = %s", pc, instr, instr_name);
     endfunction: convert2string
      
 endclass: riscv_seq_item

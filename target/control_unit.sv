@@ -2,6 +2,7 @@ module control_unit(
 	input [6:0]opcode,
   	input reset,
     input invert,
+  	input [2:0]funct,
 	output [1:0]ImSel,
     output jump,
     output branch,
@@ -44,9 +45,9 @@ assign ImSel[0] = reset ? i_type | u_type | j_type | load_type : 0;
 assign ImSel[1] = reset ? u_type | s_type : 0;
 assign wr_sel[0] = reset ? j_type | load_type | s_type : 0;
 assign wr_sel[1] = reset ? csr_type | j_type | (u_type&opcode[5]) : 0;
-assign ALUop[0] = reset ? u_type | j_type | load_type | b_type | (r_type&invert) : 0;
+assign ALUop[0] = reset ? u_type | j_type | load_type | b_type | (r_type&invert&(funct==3'b0)) : 0;
 assign ALUop[1] = reset ? load_type | s_type : 0;
-assign ALUop[2] = reset ? csr_type | b_type | (r_type&invert) : 0;
+  assign ALUop[2] = reset ? csr_type | b_type | (r_type&invert&(funct==3'b0)) : 0;
 
 
 endmodule // control_unit

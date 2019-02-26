@@ -12,7 +12,7 @@ module riscv_wrapper(
 
 
   wire [31:0] csr_wr_data, csr_rd_data, m_addr, m_wr_dat;
-  reg [31:0]m_rd_dat;
+  wire [31:0]m_rd_dat;
   wire [11:0]csr_rd_addr;
   
   riscv_core 			cpu(
