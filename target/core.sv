@@ -29,7 +29,7 @@ module riscv_core#(
    
   
 wire [31:0]pc_out;
-
+reg r_flag; // for reset
 wire csri;
 reg [31:0] csr_wr;
 reg [31:0] temp;
@@ -52,10 +52,12 @@ always @(posedge clk) begin
   if (reset) begin
     pc <=  pc_out;
     instr  <= instr_in;
+    r_flag <= 0;
   end
   else begin
     pc <= 32'h0 ;
     instr <= 32'h0;
+    r_flag <= 1;
   end
 end
    
@@ -90,7 +92,7 @@ sign_extend_B se_B(.se_B_in1(instr[31:25]),.se_B_in2(instr[11:7]),.se_B_imm(se_B
 
   registers regfetch(.clk(clk),.reset(reset),.rs1(instr[19:15]),.rs2(instr[24:20]),.rd(instr[11:7]),.reg_wr_dat(reg_wr_dat),.regWrite(regWrite),.rd1(rd1),.rd2(rd2));	// Register
 
-  hw_control hw(.clk(clk),.reset(reset),.next_pc(next_pc),.predecessor(predecessor),.successor(successor),.pc(pc),.fence(fence),.Imm_H(Imm_H),.H_sel(H_sel),.funct(funct),.zero(zero),.less_than(less_than),.branch(branch),.jump(jump),.alu_out_h(alu_out_h),.pc_out(pc_out)); // Hardware control - jump branch and PC
+  hw_control hw(.r_flag(r_flag),.reset(reset),.next_pc(next_pc),.predecessor(predecessor),.successor(successor),.pc(pc),.fence(fence),.Imm_H(Imm_H),.H_sel(H_sel),.funct(funct),.zero(zero),.less_than(less_than),.branch(branch),.jump(jump),.alu_out_h(alu_out_h),.pc_out(pc_out)); // Hardware control - jump branch and PC
 
   
 always @(*) begin
