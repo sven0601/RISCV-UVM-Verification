@@ -9,6 +9,7 @@ class riscv_seq_item extends uvm_sequence_item;
   rand logic [31:0]pc; 
   rand logic [31:0]instr;
   string instr_name;
+  reg reset;
   
   function new (string name = "riscv_seq_item");
       super.new(name);
@@ -23,10 +24,11 @@ class riscv_seq_item extends uvm_sequence_item;
       (instr[6:0] == 7'b1100111) -> (instr[14:12] inside {3'b000}); 	//	JALR
       (instr[6:0] == 7'b1100011) -> (instr[14:12] inside {3'b000,3'b001,3'b100,3'b101,3'b110,3'b111}); //	BRANCH
       (instr[6:0] == 7'b0000011) -> (instr[14:12] inside {3'b000,3'b001,3'b010,3'b100,3'b101});	//	LOAD
-      (instr[6:0] == 7'b0100011) -> (instr[14:12] inside {3'b000,3'b001,3'b010}); 	//	STORE
-//      (instr[6:0] == 7'b0010011) -> (instr[14:12] inside {3'b000,3'b001,3'b010,3'b011,3'b100,3'b101,3'b110,3'b111}); //	I
-//      (instr[6:0] == 7'b0110011) -> (instr[14:12] inside {3'b000,3'b001,3'b010,3'b011,3'b100,3'b101,3'b110,3'b111}); //	R
+      (instr[6:0] == 7'b0100011) -> (instr[14:12] inside {3'b000,3'b001,3'b010}); 	//	STORE    
+    ((instr[6:0] == 7'b0010011) & (instr[13:12] == 2'b01)) -> (instr[31:25] inside {7'b0000000, 7'b0100000}); // I
+    (instr[6:0] == 7'b0110011) -> (instr[31:25] inside {7'b0000000, 7'b0100000}); // R    
       (instr[6:0] == 7'b1110011) -> (instr[14:12] inside {3'b000,3'b001,3'b010,3'b011,3'b101,3'b110,3'b111});	//	CSR
+    ((instr[6:0] == 7'b1110011) & (instr[14:12] == 3'b000)) -> (instr[31:7] inside {25'b0000000000000000000000000, 25'b0000000000010000000000000});
       (instr[6:0] == 7'b0001111) -> (instr[14:12] inside {3'b000,3'b001});  //	FENCE
   }
   

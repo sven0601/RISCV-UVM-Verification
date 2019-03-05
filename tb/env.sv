@@ -1,7 +1,4 @@
 
-`include "agent.sv"
-`include "subscriber.sv"
-`include "scoreboard.sv"
 class riscv_env extends uvm_env;
 
   `uvm_component_utils(riscv_env)

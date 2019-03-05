@@ -13,12 +13,7 @@ module registers(
 	);
 
 reg [31:0] ram [31:0];
-initial begin
-  for (int i = 0; i < 32 ; ++i) begin
-    ram[i] = 32'b0;
-  end
-end
-
+  
   always @ (*)	begin	// read
     if (reset & (rs1!=5'b0)) begin
       rd1 = ram[rs1];
@@ -38,16 +33,14 @@ end
   end
 
   always @(posedge clk) begin	//	write
+    
   if(reset & regWrite ) begin
-    if (rd==5'b0) begin
+    if (rd==5'b0)
       ram[rd] <= 32'b0;
-//      $display("REG WRITE :		 %d		at		x%d",32'd0 , rd);
-    end
-    else begin
-//      $display("REG WRITE :		 %d		at		x%d",reg_wr_dat , rd);
+    else 
       ram[rd] <= reg_wr_dat;
     end
-    end
+     
   end // always @(posedge clk)
 
 

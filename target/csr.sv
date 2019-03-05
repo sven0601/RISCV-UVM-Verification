@@ -1,7 +1,7 @@
 
 
 module cs_reg(
-    input clk,
+  	input clk,
   	input reset,
   	input csr,
   	input [11:0]rd_addr,
@@ -12,13 +12,13 @@ module cs_reg(
 
   reg [31:0]csrm[4095:0];
 
-	
-always @(posedge clk) begin
+  always @(posedge clk) begin
   if (reset) begin 
     if (csr) begin
         csr_rd  = csrm [rd_addr];
+      	csrm[rd_addr] = wr_dat;
    end
-   else csr_rd = 32'b0;
+//   else csr_rd = 32'b0;
 end
 end
  

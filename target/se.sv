@@ -12,11 +12,12 @@ endmodule
 
 // Sign extend of I Type 
 module sign_extend_I(
+  	input [6:0]opcode,
   	input [11:0]se_I_in,
   	input [2:0] funct,
 	output [31:0]se_I_imm
 	);
-  assign se_I_imm = (funct[1:0] == 2'b01) ? {27'b0,se_I_in[4:0]} : {20'b0,se_I_in};
+  assign se_I_imm = ((funct[1:0] == 2'b01) & (opcode == 7'b0010011)) ? {27'b0,se_I_in[4:0]} : {20'b0,se_I_in};
 endmodule
 
 

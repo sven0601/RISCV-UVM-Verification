@@ -6,10 +6,10 @@ module ALU(
 	input [2:0]funct,
 	output reg [31:0] alu_out,
 	output reg zero,
-	output reg less_than
+	output less_than
 	);
 
-
+logic less_than;
 reg [32:0]alu_res;
 wire [31:0]alu2;
 reg [2:0]op;
@@ -19,7 +19,7 @@ reg [31:0]temp;
 
 always @ (*) begin
   
-temp = ~alu_in2 + 1;
+temp = ~alu_in2 + 32'b1;
   
 case (ALUop)
 	3'b000: op = funct;
@@ -47,8 +47,8 @@ case(op)
 	default: alu_res = 33'h00000000;  // default
 endcase // op 
  
-  if (op[2:1] == 2'b01) begin
-    less_than = alu_res[32];
+  if (op[2:1] === 2'b01) begin
+    less_than = (alu_res[32] === 1) ? 1 : 0;
       alu_out = less_than;
     end
     else begin 
@@ -57,9 +57,9 @@ endcase // op
     end
   
   carry = alu_res[32];
-  zero = (alu_res == 32'b0)?1'b1:1'b0;
+  zero = (alu_res === 32'b0) ? 1 : 0;
 end 
   
-assign alu2 = (invert&(funct==3'b0))? temp: alu_in2;
+  assign alu2 = (invert & (funct==3'b0) & (ALUop == 3'b000))? temp: alu_in2;
 
 endmodule // ALU

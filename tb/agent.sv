@@ -1,6 +1,4 @@
-`include "sequencer.sv"
-`include "driver.sv"
-`include "monitor.sv"
+
 
 class riscv_agent extends uvm_agent;
 

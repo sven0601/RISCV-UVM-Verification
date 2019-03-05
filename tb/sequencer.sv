@@ -1,4 +1,4 @@
-`include "sequence.sv"      
+      
 class riscv_sequencer extends uvm_sequencer #(riscv_seq_item);
     
   	`uvm_component_utils(riscv_sequencer)

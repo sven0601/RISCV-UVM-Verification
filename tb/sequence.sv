@@ -1,5 +1,5 @@
 
-`include "seq_item.sv"
+
 class riscv_sequence extends uvm_sequence#(riscv_seq_item);
   
   `uvm_object_utils(riscv_sequence)
@@ -11,27 +11,31 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
   
   function new (string name = "riscv_sequence");
       super.new(name);  
-    
+
+  
   endfunction
   
     
   
   task body();
    
-    srandom(2);
-   
+    srandom($time);
     
-    repeat (50) begin	// U
+    
+    i = 0;    //		TEST SEQUENCE 
+    repeat (32) begin	// U
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b0110111, 7'b0010111};
       	};
+      trans.instr[11:7] = i;
+      ++i;
         start_item(trans);
         finish_item(trans);
    		end 
-   
- //	--------------	TEST  ---------------  //
-    i = 0;
+ 
+ 
+    i = 0; 		 //	--------------	TEST  ---------------  //
     repeat(32) begin      
         trans = riscv_seq_item::type_id::create("trans");
       	trans.instr = {12'b0, i, 3'b0, i, 7'b0010011};
@@ -39,77 +43,8 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         start_item(trans);
         finish_item(trans);
         end 
-        //	-------------------------------------  //
-  
-    
-/*    
-    repeat (25) begin	// LOAD
-        trans = riscv_seq_item::type_id::create("trans");
-      	trans.randomize with {
-          trans.instr[6:0] inside {7'b0000011};
-      	};
-        start_item(trans);
-        finish_item(trans);
-        end 
-     
-
- //	--------------	TEST  ---------------  //
-    i = 0;
-    repeat(32) begin      
-        trans = riscv_seq_item::type_id::create("trans");
-      	trans.instr = {12'b0, i, 3'b0, i, 7'b0010011};
-      	++i;
-        start_item(trans);
-        finish_item(trans);
-        end 
-        //	-------------------------------------  //
-
-      
-    repeat (15) begin	// STORE
-        trans = riscv_seq_item::type_id::create("trans");
-      	trans.randomize with {
-          trans.instr[6:0] inside {7'b0100011};
-      	};      
-        start_item(trans);
-        finish_item(trans);
-        end    
-    
-   
-
-      
-  //	--------------	TEST  ---------------  //
-    i = 0; 
-    repeat(32) begin      
-        trans = riscv_seq_item::type_id::create("trans");
-      	trans.instr = {12'b0, i, 3'b0, i, 7'b0010011};
-      	++i;
-        start_item(trans);
-        finish_item(trans);
-        end 
-        //	-------------------------------------  //
-        
-*/    
-    
- /* 
- 	repeat (15) begin	//	RANDOM
-      	trans = riscv_seq_item::type_id::create("trans");
-        trans.randomize();
-        start_item(trans);
-        finish_item(trans);
-        end 
-    
-    
-    repeat (15) begin	// U
-        trans = riscv_seq_item::type_id::create("trans");
-      	trans.randomize with {
-          trans.instr[6:0] inside {7'b0110111, 7'b0010111};
-      	};
-        start_item(trans);
-        finish_item(trans);
-   		end 
-   
-   
-    repeat (15) begin	// BRANCH
+         
+    repeat (20) begin	// BRANCH
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b1100011};
@@ -117,9 +52,8 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         start_item(trans);
         finish_item(trans);
         end
-    
-    
-    repeat (15) begin	// JUMP
+        
+    repeat (20) begin	// JUMP
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b1100111, 7'b1101111};
@@ -127,9 +61,17 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         start_item(trans);
         finish_item(trans);
         end
-    
-     
-    repeat (15) begin	//	R
+  
+    i = 0; 		 //	--------------	TEST  ---------------  //
+    repeat(32) begin      
+        trans = riscv_seq_item::type_id::create("trans");
+      	trans.instr = {12'b0, i, 3'b0, i, 7'b0010011};
+      	++i;
+        start_item(trans);
+        finish_item(trans);
+        end 
+            
+    repeat (20) begin	//	R
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b0110011};
@@ -138,7 +80,7 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         finish_item(trans);
         end
  
-    repeat (15) begin	//	I
+    repeat (20) begin	//	I
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b0010011};
@@ -146,18 +88,17 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         start_item(trans);
         finish_item(trans);
         end
-
-
-    repeat (25) begin	// LOAD
+      
+    i = 0; 		 //	--------------	TEST  ---------------  //
+    repeat(32) begin      
         trans = riscv_seq_item::type_id::create("trans");
-      	trans.randomize with {
-          trans.instr[6:0] inside {7'b0000011};
-      	};
+      	trans.instr = {12'b0, i, 3'b0, i, 7'b0010011};
+      	++i;
         start_item(trans);
         finish_item(trans);
         end 
     
-    repeat (15) begin	// STORE
+    repeat (20) begin	// STORE
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b0100011};
@@ -165,9 +106,15 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         start_item(trans);
         finish_item(trans);
         end    
-    
-    
-    repeat (15) begin	// CSR
+
+    repeat (20) begin	//	RANDOM
+      	trans = riscv_seq_item::type_id::create("trans");
+        trans.randomize();
+        start_item(trans);
+        finish_item(trans);
+        end 
+        
+    repeat (20) begin	// CSR
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
           trans.instr[6:0] inside {7'b1110011};
@@ -176,20 +123,26 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         finish_item(trans);
         end
     
-    
-    repeat (15) begin	// FENCE
+ i = 0; 
+    repeat(32) begin      		//	--------------	TEST  ---------------  //
         trans = riscv_seq_item::type_id::create("trans");
-      	trans.randomize with {
-          trans.instr[6:0] inside {7'b0001111};
-      	}; 
+      	trans.instr = {12'b0, i, 3'b0, i, 7'b0010011};
+      	++i;
         start_item(trans);
         finish_item(trans);
-        end
+        end 
+        //	-------------------------------------  //
+                 
+    repeat (20) begin	// LOAD
+        trans = riscv_seq_item::type_id::create("trans");
+      	trans.randomize with {
+          trans.instr[6:0] inside {7'b0000011};
+      	};
+        start_item(trans);
+        finish_item(trans);
+        end 
         
-    */   
-     
-/*    
-  	  
+    	  
     i = 0; 
     repeat(32) begin      		//	--------------	TEST  ---------------  //
         trans = riscv_seq_item::type_id::create("trans");
@@ -199,9 +152,8 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         finish_item(trans);
         end 
         //	-------------------------------------  //
+             
 
-              
-*/
     
   endtask 
 

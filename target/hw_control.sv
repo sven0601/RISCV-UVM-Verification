@@ -24,7 +24,7 @@ reg [31:0]prev;
 reg b_type;
 reg pc_sel;
 
-always @(*) begin
+  always @(*) begin
 case ({funct[2],funct[0]})
 	2'b00: b_type = zero;
 	2'b01: b_type = ~zero;
@@ -34,7 +34,7 @@ endcase
   pc_sel <= (jump) | (branch & b_type);
 end  
   
-always @(*) begin
+  always @(*) begin
     if(!fence)  prev  = pc;
   	next_pc = pc + 32'd4 ;
 	pc_out = reset ? (pc_sel ? pc_in1 : pc_in0) : 32'b0;

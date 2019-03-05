@@ -1,5 +1,4 @@
-
-`include "env.sv"     
+     
 
 class riscv_test extends uvm_test;
   
@@ -21,6 +20,7 @@ class riscv_test extends uvm_test;
       phase.raise_objection(this);
       sequ.start(env.agent.seqr);
       phase.drop_objection(this);
+      $display("\nCOVERAGE :	%d",env.cov.instructions.c_cross.get_coverage());
     endtask
       
   endclass: riscv_test

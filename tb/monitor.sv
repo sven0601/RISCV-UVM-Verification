@@ -26,6 +26,7 @@ class riscv_monitor extends uvm_monitor;
       @ (posedge inf.MONITOR.clk )    
       seq.pc = inf.pc;
       seq.instr = inf.instr;    
+      seq.reset = inf.reset;
 //      $display("MONITOR	:	pc = %d		instr = %d\n", seq.pc, seq.instr);
       m_port.write(seq);
     end
