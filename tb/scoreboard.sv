@@ -53,14 +53,14 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
           
        	7'b1101111: 	begin//	JAL
           stack[t.instr[11:7]] = 32'd4 + t.pc;
-            pc = t.pc;
-          next_pc = ({11'b0,t.instr[31],t.instr[19:12], t.instr[20], t.instr[30:21],1'b0} + pc);	// & 32'hfffffffe;
+            pc = t.pc; 
+          next_pc = ({{12{t.instr[31]}},t.instr[19:12], t.instr[20], t.instr[30:21],1'b0} + pc);	// & 32'hfffffffe;
           	bflag = 1;
         	end
         
         7'b1100111: 	begin//	JALR
             pc = t.pc;
-          	next_pc = ({20'b0,t.instr[31:20]} + stack[t.instr[19:15]]) & 32'hfffffffe;
+          next_pc = ({{21{t.instr[31]}},t.instr[30:20]} + stack[t.instr[19:15]]) & 32'hfffffffe;
           	stack[t.instr[11:7]] = 32'd4 + t.pc;
           	bflag = 1;
 //          $display(" %d + %d",stack[t.instr[19:15]] , {20'b0,t.instr[31:20]} );
@@ -76,7 +76,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
            3'b000	:	begin	//	BEQ
              if(stack[t.instr[19:15]]==stack[t.instr[24:20]]) begin
                 pc = t.pc;
-                next_pc = {19'b0,t.instr[31],t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
+                next_pc = {{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
           	end  
              else begin
                pc = t.pc;
@@ -92,7 +92,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
           end   
              else begin
                pc = t.pc;
-               next_pc = {19'b0,t.instr[31],t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
+               next_pc = {{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
              end
          end 
            
@@ -100,7 +100,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
            3'b100	:	begin
              if(stack[t.instr[19:15]] < stack[t.instr[24:20]]) begin	//	BLT
                pc = t.pc;
-               next_pc = {19'b0,t.instr[31],t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
+               next_pc = {{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
           end   
              else begin
                pc = t.pc;
@@ -112,7 +112,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
            3'b101	:		begin
              if (stack[t.instr[19:15]] > stack[t.instr[24:20]]) begin	//	BGE
                  pc = t.pc;
-                 next_pc = {19'b0,t.instr[31],t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
+                 next_pc = {{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
           end 
              else begin
                pc = t.pc;
@@ -123,7 +123,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
            3'b110	:	begin
              if(stack[t.instr[19:15]] < stack[t.instr[24:20]]) begin	//	BLTU        
                  pc = t.pc;
-                 next_pc = {19'b0,t.instr[31],t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
+                 next_pc = {{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
           		end   
              else begin
                pc = t.pc;
@@ -134,7 +134,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
         3'b111	:	begin
           if(stack[t.instr[19:15]] > stack[t.instr[24:20]]) begin	//	BGEU    
                  pc = t.pc;
-                 next_pc = {19'b0,t.instr[31],t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
+                 next_pc = {{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0} + t.pc;
           		end  
              else begin
                pc = t.pc;
@@ -149,12 +149,12 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
        
      7'b0010011: begin	// I
          case(t.instr[14:12])
-           3'b000	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] + {20'b0,t.instr[31:20]};
-           3'b010	:	stack[t.instr[11:7]] = (stack[t.instr[19:15]] < {20'b0,t.instr[31:20]}) ? 32'b1 : 32'b0;
-           3'b011	:	stack[t.instr[11:7]] = (stack[t.instr[19:15]] < {20'b0,t.instr[31:20]}) ? 32'b1 : 32'b0;
-           3'b100	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] ^ {20'b0,t.instr[31:20]};
-           3'b110	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] | {20'b0,t.instr[31:20]};
-           3'b111	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] & {20'b0,t.instr[31:20]};
+           3'b000	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]};
+           3'b010	:	stack[t.instr[11:7]] = (stack[t.instr[19:15]] < {{21{t.instr[31]}},t.instr[30:20]}) ? 32'b1 : 32'b0;
+           3'b011	:	stack[t.instr[11:7]] = (stack[t.instr[19:15]] < {{21{t.instr[31]}},t.instr[30:20]}) ? 32'b1 : 32'b0;
+           3'b100	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] ^ {{21{t.instr[31]}},t.instr[30:20]};
+           3'b110	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] | {{21{t.instr[31]}},t.instr[30:20]};
+           3'b111	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] & {{21{t.instr[31]}},t.instr[30:20]};
            3'b001	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] << {27'b0,t.instr[24:20]};
            3'b101	:	begin
              stack[t.instr[11:7]] = stack[t.instr[19:15]] >> {27'b0,t.instr[24:20]};
@@ -227,13 +227,13 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
        
        7'b0000011 : begin	//	LOAD
          m_flag = 1;
-         m_addr = (stack[t.instr[19:15]] + {20'b0,t.instr[31:20]}) << 2;
+         m_addr = (stack[t.instr[19:15]] + {20'b0,t.instr[31:20]}) << 2; 
          case(t.instr[14:12])
-           3'b000 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {20'b0,t.instr[31:20]}) << 2]) & 32'h000000ff;
+           3'b000 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]}) << 2]) & 32'h000000ff;
            3'b001 : 	stack[t.instr[11:7]] = (mem[m_addr]) & 32'h0000ffff;
-           3'b010 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {20'b0,t.instr[31:20]}) << 2]);
-           3'b100 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {20'b0,t.instr[31:20]}) << 2]) & 32'h000000ff;
-           3'b101 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {20'b0,t.instr[31:20]}) << 2]) & 32'h0000ffff;         
+           3'b010 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]}) << 2]);
+           3'b100 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]}) << 2]) & 32'h000000ff;
+           3'b101 : 	stack[t.instr[11:7]] = (mem[(stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]}) << 2]) & 32'h0000ffff;         
          endcase 
          if (t.instr[11:7] == 5'b00000)	stack[t.instr[11:7]] = 32'b0;
          m_dat =  stack[t.instr[11:7]];
@@ -241,7 +241,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
        
       7'b0100011 : begin	//	STORE
          m_flag = 1;
-         m_addr = (stack[t.instr[19:15]] + {20'b0,t.instr[31:25],t.instr[11:7]}) << 2;
+        m_addr = (stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:25],t.instr[11:7]}) << 2;
          case(t.instr[14:12])
            3'b000 : 	begin
              m_dat = stack[t.instr[24:20]] & 32'h000000ff;
