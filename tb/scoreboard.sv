@@ -1,5 +1,3 @@
-// Missing - U, ECALL, memdump
-
 
 
 class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
