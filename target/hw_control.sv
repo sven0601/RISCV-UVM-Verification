@@ -1,13 +1,13 @@
 module hw_control(
   	input reset,
   	input r_flag,
-    	output reg [31:0]predecessor,
-    	output reg [31:0]successor,
+    output reg [31:0]predecessor,
+    output reg [31:0]successor,
 	input [31:0]pc,
 	input [31:0]Imm_H,
 	input [2:0]funct,
-    	input H_sel,
-    	input fence,
+    input H_sel,
+    input fence,
 	input zero,
 	input less_than,
 	input branch,
@@ -33,7 +33,7 @@ case ({funct[2],funct[0]})
 endcase
   	pc_sel = (jump) | (branch & b_type);
     pc_in0 = next_pc;
-    pc_in1 = (jump & ~H_sel) ? alu_out_h : (pc + Imm_H);
+    pc_in1 = (jump & ~H_sel) ? alu_out_h : (pc + $signed(Imm_H));
 	pc_out = pc_sel ? pc_in1 : pc_in0;
 end  
   

@@ -1,4 +1,3 @@
-
 module sign_extend_csr(
 	input [4:0]se_csr_in,
   output [31:0]se_csr_imm
