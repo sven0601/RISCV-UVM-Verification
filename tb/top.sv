@@ -45,7 +45,7 @@ module top();
   
 initial begin
 
-  run_test();
+   run_test("riscv_test");
 end
   
   
