@@ -146,5 +146,16 @@ case (wr_sel)
 endcase
 end 
   
-  
+always_comb begin   
+    
+  if (MemRead)    begin
+    uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","m_addr", m_addr << 2);   
+    uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","m_dat", (instr[11:7] == 5'b00000) ? 32'b0 : reg_wr_dat);
+  end
+
+  if (MemWrite)    begin
+    uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","m_addr", m_addr << 2);   
+    uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","m_dat", m_wr_dat);
+  end
+end  
 endmodule
