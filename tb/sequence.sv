@@ -61,7 +61,7 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         start_item(trans);
         finish_item(trans);
         end
-  
+  /*
     i = 0; 		 //	--------------	TEST  ---------------  //
     repeat(32) begin      
         trans = riscv_seq_item::type_id::create("trans");
@@ -154,7 +154,7 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
         //	-------------------------------------  //
              
 
-    
+    */
   endtask 
 
 endclass: riscv_sequence      
