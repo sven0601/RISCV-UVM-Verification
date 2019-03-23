@@ -64,15 +64,10 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
 //          $display("stack[%d] = %h", t.instr[11:7], 32'd4 + t.pc);
         	end 
         
-        7'b1100011: 	begin
+         7'b1100011: 	begin
          bflag = 1;
-          if (t.instr[13]) begin
-                op1 = stack[t.instr[19:15]];
-                op2 = stack[t.instr[24:20]];
-              end else begin
-                op1 = $signed(stack[t.instr[19:15]]);
-                op2 = $signed(stack[t.instr[24:20]]);
-              end
+            op1 = stack[t.instr[19:15]];
+            op2 = stack[t.instr[24:20]];
 			se_b = $signed({{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0});
           
 //		  $display("op1 = %h, op2 = %h",op1, op2);
@@ -89,12 +84,12 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
 			end 
            
            3'b100	:	begin	//	BLT
-            if(op1 < op2)	next_pc = se_b + t.pc;
+             if($signed(op1) < $signed(op2))	next_pc = se_b + t.pc;
             else next_pc = t.pc + 32'd4;
 			end
            
            3'b101	:	begin	//	BGE
-            if (op1 > op2) next_pc = se_b + t.pc;
+             if ($signed(op1) > $signed(op2)) next_pc = se_b + t.pc;
             else next_pc = t.pc + 32'd4;
 			end
            
@@ -107,8 +102,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
             if(op1 > op2) 	next_pc = se_b + t.pc;
             else 	next_pc = t.pc + 32'd4;
 			end
-         endcase
-          $display("op1 = %h, op2 = %h",op1, op2);        
+         endcase     
        end
 	   
        
