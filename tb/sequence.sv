@@ -22,7 +22,7 @@ class riscv_sequence extends uvm_sequence#(riscv_seq_item);
     srandom($time);
     
     
-    i = 0;    //		TEST SEQUENCE 
+    i = 0;    
     repeat (32) begin	// U
         trans = riscv_seq_item::type_id::create("trans");
       	trans.randomize with {
