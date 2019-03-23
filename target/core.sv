@@ -50,7 +50,7 @@ reg [31:0]instr;
   
 always @(posedge clk) begin
   if (reset) begin
-    pc <=  pc_out & 32'hfffffffc;
+    pc <=  pc_out;
     instr  <= instr_in;
     r_flag <= 0;
   end
