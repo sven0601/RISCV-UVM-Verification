@@ -50,7 +50,7 @@ reg [31:0]instr;
   
 always @(posedge clk) begin
   if (reset) begin
-    pc <=  pc_out;
+    pc <=  pc_out ;
     instr  <= instr_in;
     r_flag <= 0;
   end
@@ -143,7 +143,7 @@ case (wr_sel)
     	end 
   2'b10: reg_wr_dat = Imm; 
   2'b11: reg_wr_dat = next_pc; 
-endcase
+endcase 
 end 
   
 always_comb begin   
@@ -157,5 +157,6 @@ always_comb begin
     uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","m_addr", m_addr << 2);   
     uvm_config_db #(reg[31:0])::set(uvm_root::get(),"*","m_dat", m_wr_dat);
   end
-end  
+end
+  
 endmodule

@@ -51,8 +51,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
           
        	7'b1101111: 	begin//	JAL
           stack[t.instr[11:7]] = 32'd4 + t.pc;
-          next_pc = (t.pc + $signed({{12{t.instr[31]}},t.instr[19:12], t.instr[20], t.instr[30:21],1'b0})); 	
-//          $display("%h + %h = %h",{{12{t.instr[31]}},t.instr[19:12], t.instr[20], t.instr[30:21],1'b0} , pc, {{12{t.instr[31]}},t.instr[19:12], t.instr[20], t.instr[30:21],1'b0} + pc);
+          next_pc = (t.pc + $signed({{12{t.instr[31]}},t.instr[19:12], t.instr[20], t.instr[30:21],1'b0})); 
           	bflag = 1;
         	end
         
@@ -60,11 +59,9 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
 			next_pc = ($signed({{21{t.instr[31]}},t.instr[30:20]}) + $signed(stack[t.instr[19:15]])) & 32'hfffffffe;
           	stack[t.instr[11:7]] = 32'd4 + t.pc;
           	bflag = 1;
-//          $display(" %d + %d",stack[t.instr[19:15]] , {20'b0,t.instr[31:20]} );
-//          $display("stack[%d] = %h", t.instr[11:7], 32'd4 + t.pc);
         	end 
         
-         7'b1100011: 	begin
+        7'b1100011: 	begin
          bflag = 1;
             op1 = stack[t.instr[19:15]];
             op2 = stack[t.instr[24:20]];
