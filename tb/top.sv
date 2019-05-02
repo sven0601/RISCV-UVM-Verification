@@ -1,3 +1,4 @@
+`include "wrapper.sv"
 `include "interface.sv"
 `include "seq_item.sv"
 `include "sequence.sv" 
@@ -20,7 +21,7 @@ module top();
    $dumpvars;  	
     clk = 0;
     reset = 0;
-    #5 reset = 1;
+    #20 reset = 1;
   end
 
   always #2 clk = ~clk;

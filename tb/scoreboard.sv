@@ -1,15 +1,13 @@
-// Missing - U, ECALL, memdump
-
 
 
 class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
   
-  `uvm_component_utils(riscv_scoreboard)
+  `uvm_component_utils(riscv_scoreboard) 
   
   reg [31:0] stack[31:0];
   reg [31:0] mem[(2**25) - 1:0],	csr[4095:0];
   reg [31:0] dat;
-  reg [31:0] pc, next_pc, reg_rd_dat, m_addr, m_dat, m_addr_obs, m_dat_obs, rd_dat, op1, op2, se_b;
+  reg [31:0] pc, rd1, next_pc, reg_rd_dat, m_addr, m_dat, m_addr_obs, m_dat_obs, rd_dat, op1, op2, se_b;
   reg bflag = 0, m_flag = 0;
   uvm_analysis_imp #(riscv_seq_item, riscv_scoreboard) sc_port;
 
@@ -17,8 +15,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
   	function new(string name, uvm_component parent);
        super.new(name, parent);
       sc_port = new("sc_port",this);
-        
-//   $readmemh("mem.txt", mem);
+  
   	endfunction : new 
     
   
@@ -35,8 +32,20 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
 			else	$display("PC STATUS :	 (!) ----------------FAIL 	Expected :	%h		Observed :	%h", next_pc, t.pc); 
         bflag = 0;
       end
+
         
-        
+      
+        if (m_flag) begin		// LOAD STORE Check
+            uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","m_addr", m_addr_obs);   
+            uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","m_dat", m_dat_obs);
+
+            if ((m_dat === m_dat_obs) & (m_addr === m_addr_obs))
+              $display("MEM STATUS :	 --------- PASS ---------	Expected :	[%h] , %h,		Observed :	[%h] , %h", m_addr, m_dat, m_addr_obs, m_dat_obs);  
+              else
+                $display("MEM STATUS :	 (!) ----------------FAIL 	Expected :	[%h] , %h,		Observed :	[%h] , %h", m_addr, m_dat, m_addr_obs, m_dat_obs); 
+              m_flag = 0; 
+       end         
+             
         
         
      case(t.instr[6:0]) 
@@ -65,10 +74,8 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
          bflag = 1;
             op1 = stack[t.instr[19:15]];
             op2 = stack[t.instr[24:20]];
-			se_b = $signed({{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0});
-          
-//		  $display("op1 = %h, op2 = %h",op1, op2);
-		  
+			se_b = $signed({{20{t.instr[31]}},t.instr[7],t.instr[30:25],t.instr[11:8],1'b0});          
+//          $display("op1 = %h, op2 = %h, Imm = %h",op1, op2, se_b);		  
          case(t.instr[14:12])
            3'b000	:	begin	//	BEQ
              if(op1 == op2) 	next_pc = se_b + t.pc;
@@ -104,7 +111,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
 	   
        
        7'b0000011 : begin	//	LOAD
-         m_flag = 0;
+         m_flag = 1;
          if (t.instr[14])	m_addr = (stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]}) << 2;
          else 	m_addr = ($signed(stack[t.instr[19:15]]) + $signed({{21{t.instr[31]}},t.instr[30:20]})) << 2;
          case(t.instr[14:12])
@@ -133,19 +140,20 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
        
      7'b0010011: begin	// I
          case(t.instr[14:12])
-           3'b000	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] + {{21{t.instr[31]}},t.instr[30:20]};
-           3'b010	:	stack[t.instr[11:7]] = (stack[t.instr[19:15]] < {{21{t.instr[31]}},t.instr[30:20]}) ? 32'b1 : 32'b0;
+           3'b000	:	stack[t.instr[11:7]] = $signed(stack[t.instr[19:15]]) + $signed({{21{t.instr[31]}},t.instr[30:20]});
+           3'b010	:	stack[t.instr[11:7]] = ($signed(stack[t.instr[19:15]]) < $signed({{21{t.instr[31]}},t.instr[30:20]})) ? 32'b1 : 32'b0;
            3'b011	:	stack[t.instr[11:7]] = (stack[t.instr[19:15]] < {{21{t.instr[31]}},t.instr[30:20]}) ? 32'b1 : 32'b0;
            3'b100	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] ^ {{21{t.instr[31]}},t.instr[30:20]};
            3'b110	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] | {{21{t.instr[31]}},t.instr[30:20]};
            3'b111	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] & {{21{t.instr[31]}},t.instr[30:20]};
-           3'b001	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] << {{21{t.instr[31]}},t.instr[30:20]};
+           3'b001	:	stack[t.instr[11:7]] = stack[t.instr[19:15]] << t.instr[24:20];
            3'b101	:	begin
-                         stack[t.instr[11:7]] = stack[t.instr[19:15]] >> {27'b0,t.instr[24:20]};
+                         stack[t.instr[11:7]] = stack[t.instr[19:15]] >> t.instr[24:20];;
                          if(t.instr[30])	stack[t.instr[11:7]][31] = stack[t.instr[19:15]][31];
                         end
          endcase
     if (t.instr[11:7] == 5'b00000)	stack[t.instr[11:7]] = 32'b0;
+//       $display("reg[%d] <- %h = %h %h",t.instr[11:7],stack[t.instr[11:7]],  stack[t.instr[19:15]] , {{21{t.instr[31]}},t.instr[30:20]});
        end 
 
        
@@ -153,7 +161,7 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
      7'b0110011:	begin	//	R
          case(t.instr[14:12])
            3'b000	:	begin
-             if (t.instr[31:25] == 7'b0100000) stack[t.instr[11:7]] = $signed(stack[t.instr[19:15]]) - $signed(stack[t.instr[24:20]]);
+             if (t.instr[30] == 1'b1) stack[t.instr[11:7]] = $signed(stack[t.instr[19:15]]) - $signed(stack[t.instr[24:20]]);
              else  stack[t.instr[11:7]] = $signed(stack[t.instr[19:15]]) + $signed(stack[t.instr[24:20]]);
            end
            3'b010	:	stack[t.instr[11:7]] = $signed(stack[t.instr[19:15]]) < $signed(stack[t.instr[24:20]]) ? 32'b1 : 32'b0;
@@ -168,9 +176,9 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
            	end   
          endcase 
          if (t.instr[11:7] == 5'b00000)	stack[t.instr[11:7]] = 32'b0;
-//       $display("reg[%d] <- %h = %h %h",t.instr[11:7],stack[t.instr[11:7]],  stack[t.instr[19:15]] , stack[t.instr[24:20]]);
+//       $display("%h = %h %h",stack[t.instr[11:7]],  stack[t.instr[19:15]] , stack[t.instr[24:20]]);
        end
-               
+                
           
     7'b1110011 : begin	//	CSR	
       case(t.instr[14:12]) 
@@ -211,34 +219,29 @@ class riscv_scoreboard extends uvm_subscriber#(riscv_seq_item);
     end 
        
     endcase  
-       
-       
-        
-        
-      if ((t.instr[6:0] == 7'b0010011) & (t.instr[31:20]== 12'b0) & (t.instr[14:12] == 3'b0)) begin 
-            uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","reg_rd_dat", reg_rd_dat);
+   
+        if ((t.instr[6:0] == 7'b0010011)  & (t.instr[31:20]== 12'b0) & (t.instr[14:12] == 3'b0)) begin 
+          uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","rd1", reg_rd_dat);
         	if (t.instr[11:7] == 32'b0) $display("\n\n//	 -----------------------------------------	REG TEST	-------------------------------------------   //\n",); 
-        	if (stack[t.instr[11:7]] === reg_rd_dat) 	
+         	if (stack[t.instr[11:7]] === reg_rd_dat) 	
               $display("REG x%d STATUS :	 --------- PASS ---------	Expected :	%h		Observed :	%h", t.instr[11:7], stack[t.instr[11:7]], reg_rd_dat);
         	else 	$display("REG x%d STATUS :	 (!) ----------------FAIL 	Expected :	%h		Observed :	%h", t.instr[11:7], stack[t.instr[11:7]], reg_rd_dat);
 
-            //        $display("STACK	:		 %d		at		x%d", stack[t.instr[11:7]] , t.instr[11:7]);
-      end
-             
-        else 	`uvm_info("Scoreboard", $psprintf("	%s", t.convert2string()), UVM_NONE);
+        end
         
         
-        if (m_flag) begin		// LOAD STORE Check
-            uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","m_addr", m_addr_obs);   
-            uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","m_dat", m_dat_obs);
+        else if ((t.instr[6:0] == 7'b0010011) | (t.instr[6:0] == 7'b0110011)) begin 
+            uvm_config_db #(reg[31:0])::get(uvm_root::get(),"*","reg_rd_dat", reg_rd_dat);
+        	`uvm_info("scoreboard", $psprintf("	%s", t.convert2string()), UVM_NONE); 
+        	if (stack[t.instr[11:7]] === reg_rd_dat) 	
+              $display("I/R x%d STATUS :	 --------- PASS ---------	Expected :	%h		Observed :	%h", t.instr[11:7], stack[t.instr[11:7]], reg_rd_dat);
+          else 	$display("I/R x%d STATUS :	 (!) ----------------FAIL 	Expected :	%h		Observed :	%h", t.instr[11:7], stack[t.instr[11:7]], reg_rd_dat);
 
-            if ((m_dat === m_dat_obs) & (m_addr === m_addr_obs))
-              $display("MEM STATUS :	 --------- PASS ---------	Expected :	[%h] , %h,		Observed :	[%h] , %h", m_addr, m_dat, m_addr_obs, m_dat_obs);  
-              else
-                $display("MEM STATUS :	 (!) ----------------FAIL 	Expected :	[%h] , %h,		Observed :	[%h] , %h", m_addr, m_dat, m_addr_obs, m_dat_obs); 
-              m_flag = 0; 
-       end  
-         
+        end
+             
+        else 	`uvm_info("scoreboard", $psprintf("	%s", t.convert2string()), UVM_NONE);
+        
+          
       
      end
   endfunction 

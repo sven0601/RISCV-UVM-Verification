@@ -28,9 +28,10 @@ class riscv_driver extends uvm_driver #(riscv_seq_item);
       
       task drive(input riscv_seq_item req);
         @(posedge vi.DRIVER.clk);
+        @(vi.pc);        
+        req.reset = vi.reset;
         req.pc = vi.pc;
         vi.instr = req.instr;
-        req.reset = vi.reset;
         
         if (vi.trap)	//$finish;
           $display("EBREAK");

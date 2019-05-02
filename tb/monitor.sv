@@ -23,11 +23,12 @@ class riscv_monitor extends uvm_monitor;
   virtual task run_phase(uvm_phase phase);
     forever begin
       seq = riscv_seq_item::type_id::create("seq") ;
-      @ (posedge inf.MONITOR.clk )    
+      @ (posedge inf.MONITOR.clk ); 
       seq.pc = inf.pc;
       seq.instr = inf.instr;    
       seq.reset = inf.reset;
-//      $display("MONITOR	:	pc = %d		instr = %d\n", seq.pc, seq.instr);
+//      $display("MONITOR	:	pc = %d		instr = %d\n", seq.pc, seq.instr);   
+       @(inf.pc);
       m_port.write(seq);
     end
   endtask : run_phase
